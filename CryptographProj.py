@@ -33,9 +33,7 @@ def mono_to_text(mono):
             text.append(list(key_pair.keys())[list(key_pair.values()).index(code)])
         else: 
             text.append(' ')  # If the mono code doesn't exist in the dictionary add a space
-    return ''.join(text)
-
-
+    return ' '.join(text)
 
 # ------------------------------------------------------ CAESAR CIPHER ------------------------------------------------------ #
 
@@ -89,6 +87,45 @@ def morse_to_text(morse):
     return ''.join(text)
 
 
+# ------------------------------------------------------ VIGENERE CIPHER ------------------------------------------------------ #
+
+
+def vigenere_encrypt(text, key):
+    encrypted_text = []
+    key = key.upper()
+    key_index = 0
+
+    for char in text.upper():
+        if char in Alphabet:
+            shift = Alphabet.index(key[key_index])
+            new_index = (Alphabet.index(char) + shift) % 26
+            encrypted_text.append(Alphabet[new_index])
+            key_index = (key_index + 1) % len(key)
+        else:
+            encrypted_text.append(char)  
+
+    return ''.join(encrypted_text)
+
+
+def vigenere_decrypt(text, key):
+    decrypted_text = []
+    key = key.upper()
+    key_index = 0
+
+    for char in text.upper():
+        if char in Alphabet:
+            shift = Alphabet.index(key[key_index])
+            new_index = (Alphabet.index(char) - shift) % 26
+            decrypted_text.append(Alphabet[new_index])
+            key_index = (key_index + 1) % len(key)
+        else:
+            decrypted_text.append(char)  
+
+    return ''.join(decrypted_text)
+
+
+# ------------------------------------------------------ MAIN FUNCTION ------------------------------------------------------ #
+
 def main():
     
     while True:
@@ -96,7 +133,7 @@ def main():
         Choice = int(input("What Encryption Would you like your message to be encrypted with? \n"
                            "1. Caesar Cipher \n"
                            "2. Monoalphabetic Cipher \n"
-                           "3. ? \n"
+                           "3. Vigenere Cipher \n"
                            "4. Morse Code \n"
                            "5. Exit \n"))
 
@@ -109,13 +146,16 @@ def main():
             print(f"Caesar Cipher Alphabet : \n{list(caesar_cipher('ABCDEFGHIJKLMNOPQRSTUVWXYZ', shift))}\n")
             print(f"Encrypted Message :\n{caesar_cipher(message.upper(), shift)}")
 
-            print("Would you like to decrypt the message?")
-            decrypt = input("(1) Yes or (0)No : ")
-            if decrypt == "1":
-                message = input("Please Enter a Message to Decrypt: ")
-                print(caesar_cipher(message.upper(), -shift) + "\n")
-            elif decrypt == "0":
-                print("Goodbye")
+            while True:
+
+                print("Would you like to decrypt the message?")
+                decrypt = input("(1) Yes or (0)No : ")
+                if decrypt == "1":
+                    message = input("Please Enter a Message to Decrypt: ")
+                    print(caesar_cipher(message.upper(), -shift) + "\n")
+                elif decrypt == "0":
+                    print("Goodbye")
+                    break
 
 
         elif Choice == 2:   
@@ -127,17 +167,35 @@ def main():
 
             print(f"Encrypted Message :\n{text_to_mono(message)}")
 
-            print("Would you like to decrypt the message?")
-            decrypt = input("(1) Yes or (0)No : ")
-            if decrypt == "1":
-                message = input("Please Enter a Message to Decrypt: ")
-                print(mono_to_text(message) + "\n")
-            elif decrypt == "0":
-                print("Goodbye")
+            while True:
+
+                print("Would you like to decrypt the message?")
+                decrypt = input("(1) Yes or (0)No : ")
+                if decrypt == "1":
+                    message = input("Please Enter a Message to Decrypt: ")
+                    print(mono_to_text(message) + "\n")
+                elif decrypt == "0":
+                    print("Goodbye")
+                    break
 
 
         elif Choice == 3:
-            print("3")
+            print("Vignere Cipher")
+            message = input("Please Enter a Message to Encrypt: ")
+            key = input("Enter the key: ")
+
+            print(f"Encrypted Message :\n{vigenere_encrypt(message, key)}")
+
+            while True:
+                print("Would you like to decrypt the message?")
+                decrypt = input("(1) Yes or (0)No : ")
+                if decrypt == "1":
+                    message = input("Please Enter a Message to Decrypt: ")
+                    key = input("Enter the key: ")
+                    print(vigenere_decrypt(message, key) + "\n")
+                elif decrypt == "0":
+                    print("Goodbye")
+                    break
 
 
         elif Choice == 4:
@@ -145,13 +203,15 @@ def main():
             message = input("Please Enter a Message to Encrypt: ")
             print(text_to_morse(message))
 
-            print("Would you like to decrypt the message?")
-            decrypt = input("(1)Yes or (0)No : ")
-            if decrypt == "1":
-                message = input("Please Enter a Message to Decrypt: ")
-                print(morse_to_text(message) + "\n")
-            elif decrypt == "0":
-                print("Goodbye")
+            while True:
+                print("Would you like to decrypt the message?")
+                decrypt = input("(1)Yes or (0)No : ")
+                if decrypt == "1":
+                    message = input("Please Enter a Message to Decrypt: ")
+                    print(morse_to_text(message) + "\n")
+                elif decrypt == "0":
+                    print("Goodbye")
+                    break
 
         elif Choice == 5:
             print("Goodbye")
