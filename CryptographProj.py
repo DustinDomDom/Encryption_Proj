@@ -1,14 +1,13 @@
 import random
 
-Alphabet = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')  # List of all the letters in the alphabet in array form
+Alphabet = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') 
 
 # ------------------------------------------------------ MONOALPHABETIC CIPHER ------------------------------------------------------ #
 
-def random_key():  # Random key generator
+def random_key(): 
     shuffled_alphabet = list(Alphabet)  
     random.shuffle(shuffled_alphabet)  
     
-    # Create a dictionary that maps each letter of the original alphabet to the shuffled alphabet
     key_pair = dict(zip(Alphabet, shuffled_alphabet))
     return key_pair
 
@@ -21,23 +20,23 @@ def text_to_mono(text):
         if char in key_pair:
             mono_code.append(key_pair[char])
         else:
-            mono_code.append(' ')  # If the character is not in the dictionary add a space
+            mono_code.append(' ') 
     return ' '.join(mono_code)
 
 def mono_to_text(mono):
-    # Split the mono code by spaces to handle each letter or word
+
     mono_code_list = mono.split(' ')
     text = []
     for code in mono_code_list:
         if code in key_pair.values():
             text.append(list(key_pair.keys())[list(key_pair.values()).index(code)])
         else: 
-            text.append(' ')  # If the mono code doesn't exist in the dictionary add a space
+            text.append(' ') 
     return ' '.join(text)
 
 # ------------------------------------------------------ CAESAR CIPHER ------------------------------------------------------ #
 
-def caesar_cipher(text, shift): # Caesar Cipher function
+def caesar_cipher(text, shift):
     result = ''
 
     for char in text:
@@ -70,7 +69,12 @@ def text_to_morse(text):
     morse_code = []
     for char in text.upper():
         if char in MORSE_CODE_DICT:
-            morse_code.append(MORSE_CODE_DICT[char])
+            if char.isdigit():
+                # Increment the number by 3 and wrap around if necessary
+                new_num = str((int(char) + 3) % 10)
+                morse_code.append(MORSE_CODE_DICT[new_num])
+            else:
+                morse_code.append(MORSE_CODE_DICT[char])
         else:
             morse_code.append(' ')  # If the character is not in the dictionary add a space
     return ' '.join(morse_code)
@@ -81,8 +85,14 @@ def morse_to_text(morse):
     text = []
     for code in morse_code_list:
         if code in REVERSE_MORSE_CODE_DICT:
-            text.append(REVERSE_MORSE_CODE_DICT[code])
-        else: 
+            char = REVERSE_MORSE_CODE_DICT[code]
+            if char.isdigit():
+                # Decrement the number by 3 and wrap around if necessary
+                new_num = str((int(char) - 3) % 10)
+                text.append(new_num)
+            else:
+                text.append(char)
+        else:
             text.append(' ')  # If the Morse code doesn't exist in the dictionary add a space
     return ''.join(text)
 
@@ -135,7 +145,8 @@ def main():
                            "2. Monoalphabetic Cipher \n"
                            "3. Vigenere Cipher \n"
                            "4. Morse Code \n"
-                           "5. Exit \n"))
+                           "5. Decrypt \n"
+                           "6. Exit \n"))
 
         if Choice == 1:
             print("Caesar Cipher")
@@ -199,24 +210,52 @@ def main():
 
 
         elif Choice == 4:
-            print("Morse Code")
-            message = input("Please Enter a Message to Encrypt: ")
-            print(text_to_morse(message))
+            print("\nMorse Code")
+            message = input("Enter a Message to Encrypt: ")
+            key = input("Enter Key: ")
+            encrypted_msg1 = vigenere_encrypt(message, key)
+            encrypted_msg2 = text_to_morse(encrypted_msg1)
+            print(f"Encrypted Message: {encrypted_msg2}")
 
-            while True:
-                print("Would you like to decrypt the message?")
-                decrypt = input("(1)Yes or (0)No : ")
-                if decrypt == "1":
-                    message = input("Please Enter a Message to Decrypt: ")
-                    print(morse_to_text(message) + "\n")
-                elif decrypt == "0":
-                    print("Goodbye")
-                    break
+            decrypt = input("\nDecrypt message? (1) Yes or (0) No: ")
+            if decrypt == "1":
 
-        elif Choice == 5:
+                decrypted_msg1 = morse_to_text(encrypted_msg2)
+                decrypted_msg2 = vigenere_decrypt(decrypted_msg1, key)
+                print(f"Decrypted Message: {decrypted_msg2}\n")
+
+        elif Choice == 6:
             print("Goodbye")
             exit()
+        elif Choice == 5:
+            while True:
+                Choice2 = int(input("What Decryption Would you like your message to be Decrypted with? \n"
+                        "1. Caesar Cipher \n"
+                        "2. Monoalphabetic Cipher \n"
+                        "3. Vigenere Cipher \n"
+                        "4. Morse Code Modified \n"
+                        "5. Exit \n"))
+                if Choice2 == 1:
+                    message = input("Please Enter a Message to Decrypt: ")
+                    print(caesar_cipher(message.upper(), -shift) + "\n")
 
+                elif Choice2 == 2:
+                    message = input("Please Enter a Message to Decrypt: ")
+                    print(mono_to_text(message) + "\n")
+                elif Choice2 == 3:
+                        message = input("Please Enter a Message to Decrypt: ")
+                        key = input("Enter the key: ")
+                        print(vigenere_decrypt(message, key) + "\n")
+
+                elif Choice2 == 4:
+                    message = input("Enter a Message to Encrypt: ")
+                    key = input("Enter Key: ")
+                    decrypted_msg1 = morse_to_text(message)
+                    decrypted_msg2 = vigenere_decrypt(decrypted_msg1, key)
+                    print(f"Decrypted Message: {decrypted_msg2}\n")
+                elif Choice2 == 5:
+                    print("Exiting Decryption...")
+                    break
         else:
             print("Invalid Choice")
 
